@@ -91,6 +91,7 @@ func (s Server) handleRequest(conn net.Conn) error {
 
 		rm, err := requests.NewRequestManager(requestStr)
 		pp.Println("YOUR BLODDY REQUEST LINE: ", rm.RequestLine, "lolsssssssssssssss")
+		pp.Println("YOUR BLOODY PATH: ", rm.R.URLPath, "lolsssssssssss")
 		conn.Write([]byte(requestStr))
 	}
 }
