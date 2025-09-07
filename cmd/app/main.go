@@ -7,7 +7,12 @@ import (
 
 func main() {
 	pp.Println("hello world")
-	s, err := server.NewServer("localhost", 9779)
+	allowedPaths := []string{
+		"/lol",
+		"/lol1",
+		"/ohmygodyeah",
+	}
+	s, err := server.NewServer("localhost", 9779, allowedPaths)
 	if err != nil {
 		pp.Println("OH SHITTTTT")
 	}
