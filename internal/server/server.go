@@ -4,10 +4,10 @@ import (
 	"bufio"
 	"fmt"
 	"net"
+	"slices"
 	"strconv"
 
 	requests "github.com/codecrafters-io/http-server-starter-go/internal/requests"
-
 	"github.com/k0kubun/pp"
 )
 
@@ -15,19 +15,21 @@ type Server struct {
 	/*
 	   Address or URI is the address of our restaurant.
 	*/
-	Host string // The building our restaurant is in.
-	Port int    // The bloody door.
-	URL  string
+	Host         string // The building our restaurant is in.
+	Port         int    // The bloody door.
+	URL          string
+	AllowedPaths []string
 }
 
-func NewServer(host string, port int) (*Server, error) {
+func NewServer(host string, port int, paths []string) (*Server, error) {
 	portStr := strconv.Itoa(port)
 	url := host + ":" + portStr
 
 	return &Server{
-		Host: host,
-		Port: port,
-		URL:  url,
+		Host:         host,
+		Port:         port,
+		URL:          url,
+		AllowedPaths: paths,
 	}, nil
 }
 
@@ -90,7 +92,19 @@ func (s Server) handleRequest(conn net.Conn) error {
 		}
 
 		rm, err := requests.NewRequestManager(requestStr)
-		pp.Println("YOUR BLODDY REQUEST LINE: ", rm.RequestLine, "lolsssssssssssssss")
+		if err != nil {
+			return fmt.Errorf(
+				"could not create a requestManager for requestStr : %s. Got error: %v",
+				requestStr,
+				err,
+			)
+		}
+
+		if slices.Contains(s.AllowedPaths, rm.R.Path) {
+			pp.Println("all chrome no static")
+		} else {
+			pp.Println("REAL SHIT!!!!")
+		}
 		conn.Write([]byte(requestStr))
 	}
 }

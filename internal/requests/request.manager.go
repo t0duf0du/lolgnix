@@ -1,4 +1,4 @@
-package headers
+package requests
 
 import (
 	"fmt"
@@ -10,6 +10,7 @@ type RequestManager struct {
 	RequestLine string
 	Headers     []string
 	Body        string
+	R           Request
 }
 
 func NewRequestManager(rqStr string) (*RequestManager, error) {
@@ -20,12 +21,26 @@ func NewRequestManager(rqStr string) (*RequestManager, error) {
 			err,
 		)
 	}
+
+	requestLine := rqChunks[0]
+	header := rqChunks[1:]
+
+	r, err := NewRequest(requestLine)
+	if err != nil {
+		return nil, fmt.Errorf(
+			"could not create a new request from requerequestLine: %s. Got error: %v",
+			requestLine,
+			err,
+		)
+	}
+
 	// TODO assert here as in rqChunks should have rqChunks[0] etc
 	return &RequestManager{
 		requestStr:  rqStr,
-		RequestLine: rqChunks[0],
-		Headers:     rqChunks[1:],
+		RequestLine: requestLine,
+		Headers:     header,
 		Body:        "", // Also implement bodies
+		R:           *r,
 	}, nil
 }
 
